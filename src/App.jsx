@@ -54,6 +54,7 @@ function App() {
 
 
 
+  // Funcion para generar el deck de cartas
   const generateCardDeck = (cantidadCartas=36) => {
     const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
     const cardDeck = [[],[],[]]
@@ -69,7 +70,7 @@ function App() {
     return cardDeck
   }
 
-
+  // Funcion para simular lar partidas
   const simulacion = () => {
     setDataT([])
     let ganoUsuarioCounter = 0
@@ -95,13 +96,15 @@ function App() {
         let dado = Math.floor(Math.random()* (12 - 2 + 1) + 2)
         movimientos.push(`DADO: ${dado}`)
 
+
+        // Si la carta es menor que el dado, pierde una vida
         if(carta < dado) {
           movimientos.push(`Perdio una vida, quedan ${cantidadVidas-1}`)
           cantidadVidas--
-        }else{
+        }else{ // Si la carta es mayor que el dado, gana esa iteracion
           movimientos.push(`Ganaste iteracion ${pos+1}`)
         }
-
+        // Si ya no tiene vidas, pierde la partida
         if(cantidadVidas === 0) {
           movimientos.push(`Perdiste la partida`)
           llego = pos
@@ -110,6 +113,7 @@ function App() {
         }
         
       }
+      // Si llego a la ultima iteracion, gana la partida
       if(cantidadVidas > 0) {
         movimientos.push(`Ganaste la partida`)
         ganoUsuarioCounter++
