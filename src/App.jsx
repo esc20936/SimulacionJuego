@@ -8,13 +8,22 @@ import './App.css'
 
 Chart.register(ArcElement,Tooltip,Legend);
 function App() {
-  const [dataT, setDataT] = useState([])
-  const [vidas, setVidas] = useState(6);
-  const [cantidadPartidas, setCantidadPartidas] = useState(100);
-  const [cantidadFila, setCantidadFila] = useState(13);
 
+  // Variables de estado a usar
+
+  // Datos de la tabla
+  const [dataT, setDataT] = useState([])
+  // Cantidad de vidas del jugador
+  const [vidas, setVidas] = useState(6);
+  // Cantidad de partidas a simular
+  const [cantidadPartidas, setCantidadPartidas] = useState(100);
+  // Cantidad de casillas del tablero
+  const [cantidadFila, setCantidadFila] = useState(13);
+  // tipo de deck a usar
   const [decks, setDecks] = useState('1');
 
+
+  // Configuracion de la grafica
   const [chartData, setChartData] = useState({
     labels: ['Gano usuario', 'Gano casa'],
     datasets: [
@@ -34,6 +43,7 @@ function App() {
     ],
   })
 
+  // Opciones de la grafica
   const [chartOptions, setChartOptions] = useState({
     tooltips: {
         enabled: false
@@ -58,24 +68,35 @@ function App() {
 
   // Funcion para generar el deck de cartas
   const generateCardDeck = (cantidadCartas=36, tipoDeck=1) => {
+    // Valores del deck de cartas
     const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+    // Palos del deck de cartas
     const cardDeck = [[],[],[]]
+
     for(let i=0; i<cantidadCartas; i++) {
+      //  Elegir al azar un valor de la baraja
       const randomValue = values[Math.floor(Math.random() * values.length)]
       let plano = cardDeck.flat(Infinity)
+
+      // Si el valor existe menos de 4 veces en el deck, agregarlo.
+      // Si no, elegir otro valor
       if(plano.filter(value => value === randomValue).length < 4 ) {
         cardDeck[i%3].push(randomValue)
-      }else{
+      }
+      else{
         i--;
       }
     }
-    let plano = cardDeck.flat(Infinity);
 
+    let plano = cardDeck.flat(Infinity);
     let deckFinal = [[],[],[]];
+
+    // Si el tipo de deck es 1, se retorna el deck tal cual, si no, se hace un shuffle
     if(tipoDeck === '1'){
       deckFinal = cardDeck;
     }else{
       for(let i = 0; i < plano.length; i++){
+        // si el tipo de deck es 2, se cambian los valores de 1,2,3,4 por 10,11,12,13 de manera al azar
         if(tipoDeck === '2'){
           if(plano[i] === '1' || plano[i] === '2' || plano[i] === '3' || plano[i] === '4'){
             let valores = ['9', '10', '11', '12', '13'];
@@ -83,6 +104,7 @@ function App() {
           }else{
             deckFinal[i%3].push(plano[i])
           }
+          // Si el tipo de deck es 3, se cambian los valores de 10,11,12,13 por 1,2,3,4 de manera al azar
         }else if(tipoDeck === '3'){
           if(plano[i] === '10' || plano[i] === '11' || plano[i] === '12' || plano[i] === '13'){
             let valores = ['1', '2', '3', '4'];
@@ -100,29 +122,36 @@ function App() {
 
   // Funcion para simular lar partidas
   const simulacion = () => {
+    // Se limpia la tabla
     setDataT([])
+
+    // Contadores para la grafica y descripcion de la simulacion
     let ganoUsuarioCounter = 0
     let ganoCasaCounter = 0
     let descripcionPartidas = []
-    // console.log(generateCardDeck())
-    let tempDeck = generateCardDeck(36, decks);
-    console.table(tempDeck)
+    
+    // Por cada iteracion del juego
     for(let i=0; i<cantidadPartidas; i++) {
+      // Generamos un nuevo deck con el tipo de deck elegido
       let cardDeck = generateCardDeck(36,decks);
 
+      // Damos un nombre al jugador
       let Jugador = `Jugador ${i+1}`
-
+      // Lista de movimientos del jugador
       let movimientos = []
-      
+      // Cantidad de vidas del jugador
       let cantidadVidas = vidas
       let llego = 0
-      for(let pos=0; pos<cantidadFila; pos++) {
 
+      // Por cada paso del puente
+      for(let pos=0; pos<cantidadFila; pos++) {
+        // Elejimos de que palo vamos a sacar la carta
         let filaCarta = Math.floor(Math.random()*3+1)
         movimientos.push("Se mueve a columna " + filaCarta)
+        // Sacamos la carta del palo elegido
         let carta = cardDeck[filaCarta-1].pop()
         movimientos.push(`Carta ${carta}`)
-
+        // tiramos el dado
         let dado = Math.floor(Math.random()* (12 - 2 + 1) + 2)
         movimientos.push(`DADO: ${dado}`)
 
