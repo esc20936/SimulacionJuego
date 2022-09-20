@@ -13,6 +13,8 @@ function App() {
   const [cantidadPartidas, setCantidadPartidas] = useState(100);
   const [cantidadFila, setCantidadFila] = useState(13);
 
+  const [decks, setDecks] = useState('1');
+
   const [chartData, setChartData] = useState({
     labels: ['Gano usuario', 'Gano casa'],
     datasets: [
@@ -55,7 +57,7 @@ function App() {
 
 
   // Funcion para generar el deck de cartas
-  const generateCardDeck = (cantidadCartas=36) => {
+  const generateCardDeck = (cantidadCartas=36, tipoDeck=1) => {
     const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
     const cardDeck = [[],[],[]]
     for(let i=0; i<cantidadCartas; i++) {
@@ -67,7 +69,33 @@ function App() {
         i--;
       }
     }
-    return cardDeck
+    let plano = cardDeck.flat(Infinity);
+
+    let deckFinal = [[],[],[]];
+    if(tipoDeck === '1'){
+      deckFinal = cardDeck;
+    }else{
+      for(let i = 0; i < plano.length; i++){
+        if(tipoDeck === '2'){
+          if(plano[i] === '1' || plano[i] === '2' || plano[i] === '3' || plano[i] === '4'){
+            let valores = ['9', '10', '11', '12', '13'];
+            deckFinal[i%3].push(valores[Math.floor(Math.random() * valores.length)])
+          }else{
+            deckFinal[i%3].push(plano[i])
+          }
+        }else if(tipoDeck === '3'){
+          if(plano[i] === '10' || plano[i] === '11' || plano[i] === '12' || plano[i] === '13'){
+            let valores = ['1', '2', '3', '4'];
+            deckFinal[i%3].push(valores[Math.floor(Math.random() * valores.length)])
+          }else{
+            deckFinal[i%3].push(plano[i])
+          }
+        }
+      }
+    }
+    
+
+    return deckFinal;
   }
 
   // Funcion para simular lar partidas
@@ -77,8 +105,10 @@ function App() {
     let ganoCasaCounter = 0
     let descripcionPartidas = []
     // console.log(generateCardDeck())
+    let tempDeck = generateCardDeck(36, decks);
+    console.table(tempDeck)
     for(let i=0; i<cantidadPartidas; i++) {
-      let cardDeck = generateCardDeck()
+      let cardDeck = generateCardDeck(36,decks);
 
       let Jugador = `Jugador ${i+1}`
 
@@ -171,6 +201,14 @@ function App() {
    //  console.log(vidas)
    }
 
+   const handleChangeInput4 = (e) => {
+    if(e.target.value === '1' || e.target.value === '2' || e.target.value === '3'){
+      setDecks(e.target.value)
+    }else{
+      alert("Solo se puede ingresar 1, 2 o 3")
+    }
+   }
+
   return (
     <div className="App">
       
@@ -198,6 +236,15 @@ function App() {
           </div>
           <div className="col">
             <input type="number" value ={cantidadPartidas} onChange={handleChangeInput2}/>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <h3>Tipo Deck</h3>
+            <p>1:normal , 2:altas, 3:bajas</p>
+          </div>
+          <div className="col">
+            <input type="number" value ={decks} onChange={handleChangeInput4}/>
           </div>
         </div>
         <button onClick={() => { 
